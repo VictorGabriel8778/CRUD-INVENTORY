@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Estoque</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body onload="carregarProdutos()">
+    <div class="container">
+        <h1>Gestão de Estoque</h1>
+        
+        <button class="btn" onclick="abrirPopup()">Adicionar Produto</button>
+        <button class="btn" onclick="exportarExcel()">Extrair relatorio</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Quantidade</th>
+                    <th>Preço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-produtos">
+              
+            </tbody>
+        </table>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <h2>Adicionar Produto</h2>
+            <input type="text" id="nome" placeholder="Nome do Produto">
+            <input type="number" id="quantidade" placeholder="Quantidade">
+            <input type="number" id="preco" placeholder="Preço">
+            <button class="btn" onclick="adicionarProduto()">Adicionar</button> 
+            <button class="btn-fechar" onclick="fecharPopup()">Fechar</button>
+        </div>
+    </div>
+
+    <div id="popup-editar" class="popup">
+        <div class="popup-content">
+            <h2>Editar produtos</h2>
+            <input type="hidden" id="edit-id">
+            <input type="text" id="edit-nome" disabled>
+            <input type="number" id="edit-quantidade" placeholder="Quantidade">
+            <input type="number" id="edit-preco" placeholder="Preço">
+            <button class="btn" onclick="atualizarProduto()">Salvar</button>
+            <button class="btn-fechar" onclick="fecharPopupEdicao()">Fechar</button>
+        </div>
+    </div>
+</body>
+<footer>DEVELOPED BY VRG8778</footer>
+</html>
