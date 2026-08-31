@@ -1,10 +1,38 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash
+from dotenv import load_dotenv
+import os
 import pandas as pd
 from flask import send_file, Response
 import sqlite3
 import time
 
 app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY')
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+class User(UserMixin):
+    def __init__(self, id, username):
+        self.id= str(id)
+        self.username= username
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("SELECT id, username FROM users WHERE id = ?", (user_id))
+    resultado = c.fetchone()
+    conn.close()
+
+    if resultado:
+        return User(id=resultado[0], username=resultado[1])
+    
+    return None
 
 def user_db():
     conn = sqlite3.connect('database.db')
@@ -43,6 +71,10 @@ init_db()
 @app.route('/')
 def registerPage():
     return render_template('register.html')
+
+@app.route('/login')
+def loginPage():
+    return render_template('login.html')
 
 @app.route('/home')
 def index():
@@ -124,7 +156,7 @@ def exportar_excel():
         headers={"Content-Disposition": "attachment; filename=relatorio_database.xlsx"}
     )
     
-@app.route('/login', methods=['GET'])
+@app.route('/login/request', methods=['GET'])
 def login():
     None
 
@@ -139,9 +171,11 @@ def register():
     c.execute("SELECT * FROM users WHERE username = ?", (username,))
     result = c.fetchone()
     if result:
-        print ("usuario ja cadastrado, tente outro username")
+        conn.close()
+        return jsonify({"erro": "Usuário já cadastrado, tente outro username"}), 409
     else:
-        c.execute("INSERT INTO users (username,password) VALUES (?,?)", (username,password))
+        senha_criptograda = generate_password_hash(password)
+        c.execute("INSERT INTO users (username,password) VALUES (?,?)", (username,senha_criptograda))
     conn.commit()
     conn.close()
 
