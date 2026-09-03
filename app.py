@@ -158,7 +158,19 @@ def exportar_excel():
     
 @app.route('/login/request', methods=['GET'])
 def login():
-    None
+    dados = request.get_json()
+    username = dados['username'].lower()
+    password = dados['password']
+
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE username = ?", (username))
+    result = c.fetchone()
+    if result == username:
+        c.execute("SELECT password FROM users WHERE username = ?", (username,))
+        senha = c.fetchone()
+    else:
+        return jsonify({"erro": "Usuario nao encontrado"})
 
 @app.route('/register/insert', methods=['GET','POST'])
 def register():
