@@ -80,6 +80,21 @@ def loginPage():
 def index():
     return render_template('index.html')
 
+@app.route("/graphic")
+def GraphicPage():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("SELECT nome, quantidade FROM produtos")
+    produtos = c.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "graphic.html",
+        produtos=produtos
+    )
+
 @app.route('/produtos', methods=['GET'])
 def listar_produtos():
     conn = sqlite3.connect('database.db')
