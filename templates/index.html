@@ -6,10 +6,17 @@
     <title>Gestão de Estoque</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body onload="carregarProdutos()">
-    <div class="container">
+
+    <header>
         <h1>Gestão de Estoque</h1>
+        <button id="btn-sair">Sair</button>
+    </header>
+
+    <div class="container">
+        <h1>Tabela de Produtos</h1>
         
         <button class="btn" onclick="abrirPopup()">Adicionar Produto</button>
         <button class="btn" onclick="exportarExcel()">Extrair relatorio</button>
@@ -27,6 +34,17 @@
               
             </tbody>
         </table>
+    </div>
+
+    <div class="container">
+
+        <h1> Grafico de Produtos </h1>
+
+        <canvas id="meuGrafico"></canvas>
+
+        <script>
+            const produtos = {{ produtos | tojson }};
+        </script>
     </div>
 
     <div id="popup" class="popup">
@@ -51,6 +69,7 @@
             <button class="btn-fechar" onclick="fecharPopupEdicao()">Fechar</button>
         </div>
     </div>
+
 </body>
 <footer>DEVELOPED BY VRG8778</footer>
 </html>

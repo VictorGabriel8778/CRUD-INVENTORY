@@ -114,3 +114,21 @@ function exportarExcel() {
     link.click();
     document.body.removeChild(link)
 }
+
+const nomes = produtos.map(produto => produto[0]);
+const quantidades = produtos.map(produto => produto[1]);
+
+const ctx = document.getElementById('meuGrafico');
+
+new Chart(ctx, {
+    type: 'bar',
+
+    data: {
+        labels: nomes,
+
+        datasets: [{
+            label: 'Quantidade',
+            data: quantidades
+        }]
+    }
+});

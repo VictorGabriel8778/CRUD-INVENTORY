@@ -26,8 +26,7 @@ body {
     background: rgb(0, 0, 0);
     padding: 20px;
     margin-top: 50px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgb(255, 255, 255);
+    border-top: 1px solid white;
 }
 
 h1 {
@@ -60,9 +59,12 @@ table {
 }
 
 footer{
-    margin-top: 15px;
+    margin-top: 20px;
     font-size: 15px;
     color: white;
+    margin-bottom: 10px;
+    border-top: 1px solid white;
+    padding: 5px;
 }
 
 table, th, td {
@@ -134,4 +136,40 @@ th, td {
 
 .btn-fechar:hover{
     padding: 15px 25px;
+}
+
+#btn-sair{
+    padding: 10px 15px;
+    background-color: #000000;
+    color: white;
+    border-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+header {
+    display: flex;
+    padding: 10px;
+    margin: 0;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid white;
+}
+
+header h1 {
+    margin: 0;
+}
+
+.block-login {
+    width: 90%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid white;
+    
+}
+
+.block-login h1 {
+    margin: 0%;
 }
