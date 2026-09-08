@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
     <script defer src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
         <h1>CADASTRO</h1>
         <input type="text" placeholder="Usuario" id="user">
         <input type="password" placeholder="Senha" id="password">
-        <button onclick="register()">Cadastrar</button>
+        <button onclick="register()" class="btn">Cadastrar</button>
     </div>
 </body>
 </html>

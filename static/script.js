@@ -94,6 +94,25 @@ async function atualizarProduto() {
     carregarProdutos();
 }
 
+async function login() {
+    let username = document.getElementById("user").value;
+    let password = document.getElementById("password").value;
+
+    let resposta = await fetch(`/login/request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+
+    if (resposta.redirected) {
+        window.location.href = resposta.url;
+        return;
+    }
+
+    let dados = await resposta.json();
+    alert(dados.erro || "Não foi possível fazer login");
+}
+
 async function register() {
     let username = document.getElementById("user").value;
     let password = document.getElementById("password").value;
@@ -115,20 +134,20 @@ function exportarExcel() {
     document.body.removeChild(link)
 }
 
-const nomes = produtos.map(produto => produto[0]);
-const quantidades = produtos.map(produto => produto[1]);
-
 const ctx = document.getElementById('meuGrafico');
 
-new Chart(ctx, {
-    type: 'bar',
+if (ctx && typeof produtos !== 'undefined' && typeof Chart !== 'undefined') {
+    const nomes = produtos.map(produto => produto[0]);
+    const quantidades = produtos.map(produto => produto[1]);
 
-    data: {
-        labels: nomes,
-
-        datasets: [{
-            label: 'Quantidade',
-            data: quantidades
-        }]
-    }
-});
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: nomes,
+            datasets: [{
+                label: 'Quantidade',
+                data: quantidades
+            }]
+        }
+    });
+}

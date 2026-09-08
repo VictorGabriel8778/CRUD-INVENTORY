@@ -6,7 +6,7 @@ body {
     padding: 0;
 }
 
-#nome, #quantidade, #preco, #edit-nome, #edit-quantidade, #edit-preco{
+#nome, #quantidade, #preco, #edit-nome, #edit-quantidade, #edit-preco, input{
     padding: 10px;
     border-radius: 5px;
     border: none;
@@ -161,10 +161,11 @@ header h1 {
 }
 
 .block-login {
-    width: 90%;
+    width: 120%;
     max-width: 800px;
     display: flex;
     flex-direction: column;
+    align-content: center;
     align-items: center;
     border: 1px solid white;
     

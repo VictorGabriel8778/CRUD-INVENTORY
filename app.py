@@ -1,19 +1,20 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
 import pandas as pd
 from flask import send_file, Response
 import sqlite3
-import time
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')
+app.secret_key = os.getenv('SECRET_KEY', 'chave-secreta-desenvolvimento')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'registerPage'
 
 class User(UserMixin):
     def __init__(self, id, username):
@@ -25,7 +26,7 @@ def load_user(user_id):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
-    c.execute("SELECT id, username FROM users WHERE id = ?", (user_id))
+    c.execute("SELECT id, username FROM users WHERE id = ?", (user_id,))
     resultado = c.fetchone()
     conn.close()
 
@@ -70,13 +71,14 @@ init_db()
 
 @app.route('/')
 def registerPage():
-    return render_template('register.html')
-
-@app.route('/login')
-def loginPage():
     return render_template('login.html')
 
+@app.route('/register') 
+def loginPage():
+    return render_template('register.html')
+
 @app.route('/home')
+@login_required
 def index():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -165,7 +167,7 @@ def exportar_excel():
         headers={"Content-Disposition": "attachment; filename=relatorio_database.xlsx"}
     )
     
-@app.route('/login/request', methods=['GET'])
+@app.route('/login/request', methods=['POST'])
 def login():
     dados = request.get_json()
     username = dados['username'].lower()
@@ -173,13 +175,33 @@ def login():
 
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username = ?", (username))
-    result = c.fetchone()
-    if result == username:
-        c.execute("SELECT password FROM users WHERE username = ?", (username,))
-        senha = c.fetchone()
-    else:
-        return jsonify({"erro": "Usuario nao encontrado"})
+
+    c.execute(
+        "SELECT id, username, password FROM users WHERE username = ?",
+        (username,)
+    )
+
+    user_data = c.fetchone()
+    conn.close()
+
+    if user_data is None:
+        return jsonify({"erro" : "usuario nao encontrado"}), 401
+
+    id = user_data[0]
+    username_db = user_data[1]
+    password_db = user_data[2]
+
+    if username_db == username and password_db == password:
+        usuario = User(id, username)
+
+        login_user(usuario)
+        return redirect ("/home")
+
+
+    conn.close()
+    return jsonify({"erro" : "senha incorreta"}), 401
+    
+
 
 @app.route('/register/insert', methods=['GET','POST'])
 def register():
@@ -195,12 +217,11 @@ def register():
         conn.close()
         return jsonify({"erro": "Usuário já cadastrado, tente outro username"}), 409
     else:
-        senha_criptograda = generate_password_hash(password)
-        c.execute("INSERT INTO users (username,password) VALUES (?,?)", (username,senha_criptograda))
+        c.execute("INSERT INTO users (username,password) VALUES (?,?)", (username,password))
     conn.commit()
     conn.close()
 
-    return jsonify({"mensagem": "Usuário cadastrado com sucesso"}), 201
+    return jsonify({"mensagem": "Usuário cadastrado com sucesso"}), 201, redirect("/")
 
 
 if __name__ == '__main__':
