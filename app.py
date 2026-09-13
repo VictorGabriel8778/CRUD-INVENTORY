@@ -203,25 +203,43 @@ def login():
     
 
 
-@app.route('/register/insert', methods=['GET','POST'])
+@app.route('/register/insert', methods=['POST'])
 def register():
     dados = request.get_json()
+
     username = dados['username'].lower()
     password = dados['password']
-    
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username = ?", (username,))
-    result = c.fetchone()
-    if result:
-        conn.close()
-        return jsonify({"erro": "Usuário já cadastrado, tente outro username"}), 409
-    else:
-        c.execute("INSERT INTO users (username,password) VALUES (?,?)", (username,password))
-    conn.commit()
-    conn.close()
 
-    return jsonify({"mensagem": "Usuário cadastrado com sucesso"}), 201, redirect("/")
+    try:
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM users WHERE username = ?", (username,))
+        result = c.fetchone()
+
+        if result:
+            conn.close()
+            return jsonify({
+                "erro": "Usuário já cadastrado, tente outro username"
+            }), 409
+
+        c.execute(
+            "INSERT INTO users (username, password) VALUES (?, ?)",
+            (username, password)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "mensagem": "Usuário cadastrado com sucesso"
+        }), 201
+
+    except Exception as error:
+        print(error)
+        return jsonify({
+            "erro": "Erro ao cadastrar usuário"
+        }), 500
 
 
 if __name__ == '__main__':

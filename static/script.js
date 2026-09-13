@@ -117,12 +117,31 @@ async function register() {
     let username = document.getElementById("user").value;
     let password = document.getElementById("password").value;
 
-    await fetch(`/register/insert`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    });
-    alert("Usuario cadastrado")
+    try {
+        const response = await fetch("/register/insert", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        });
+
+        const dados = await response.json();
+
+        if (!response.ok) {
+            throw new Error(dados.erro);
+        }
+
+        alert(dados.mensagem);
+
+        window.location.href = "/";
+
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
 function exportarExcel() {
